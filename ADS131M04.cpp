@@ -30,11 +30,11 @@ void ADS131M04::begin(void) {
   spi->begin();
 
   // Set CLKOUT on the ESP32 to give the correct frequency for CLKIN on the DAC
-  ledcSetup(clockCh, CLKIN_SPD, 2);
+  ledcSetup(clockCh, adcClkIn, 2);
   ledcAttachPin(clkoutPin, clockCh);
   ledcWrite(clockCh, 2);
 
-  initialised=true;
+  initialised = true;
 }
 
 void ADS131M04::rawChannels(int8_t * channelArrPtr, int8_t channelArrLen, int32_t * outputArrPtr) {
@@ -106,7 +106,7 @@ bool ADS131M04::writeReg(uint8_t reg, uint16_t data) {
   uint16_t commandWord = (commandPref<<12) + (reg<<7);
 
   digitalWrite(csPin, LOW);
-  spi->beginTransaction(SPISettings(SCLK_SPD, MSBFIRST, SPI_MODE1));
+  spi->beginTransaction(SPISettings(sClkSpd, MSBFIRST, SPI_MODE1));
 
   spiTransferWord(commandWord);
   
@@ -189,7 +189,7 @@ void ADS131M04::spiCommFrame(uint32_t * outPtr, uint16_t command) {
 
   digitalWrite(csPin, LOW);
 
-  spi->beginTransaction(SPISettings(SCLK_SPD, MSBFIRST, SPI_MODE1));
+  spi->beginTransaction(SPISettings(sClkSpd, MSBFIRST, SPI_MODE1));
 
   // Send the command in the first word
   *outPtr = spiTransferWord(command);
@@ -216,4 +216,20 @@ int32_t ADS131M04::twoCompDeco(uint32_t data) {
   int32_t dataInt = (int)data;
 
   return dataInt/pow(2,8);
+}
+
+bool ADS131M04::setClkSPI(uint32_t clk) {
+    
+    sClkSpd = clk;
+    
+    return true;
+    
+}
+
+bool ADS131M04::setClkADC(uint32_t clk) {
+    
+    adcClkIn = clk;
+    
+    return true;
+    
 }
