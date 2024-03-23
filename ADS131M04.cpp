@@ -131,7 +131,7 @@ bool ADS131M04::writeReg(uint8_t reg, uint16_t data) {
   }
 }
 
-bool ADS131M04::setGain(uint8_t log2Gain0, uint8_t log2gainCommand, uint8_t log2Gain2, uint8_t log2Gain3) {
+bool ADS131M04::setGain(uint8_t log2Gain0, uint8_t log2Gain1, uint8_t log2Gain2, uint8_t log2Gain3) {
   /* Function to set the gain of the four channels of the ADC
      
      Inputs are the log base 2 of the desired gain to be applied to each
@@ -144,7 +144,7 @@ bool ADS131M04::setGain(uint8_t log2Gain0, uint8_t log2gainCommand, uint8_t log2
   uint16_t gainCommand=log2Gain3<<4;
   gainCommand+=log2Gain2;
   gainCommand<<=8;
-  gainCommand+=(log2gainCommand<<4);
+  gainCommand+=(log2Gain1<<4);
   gainCommand+=log2Gain0;
   return writeReg(GAIN1, gainCommand);
 }
